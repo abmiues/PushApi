@@ -162,6 +162,7 @@ public class ServerSocket extends Thread{
 				break;
 			}
 		}
+		recvBuff.Shrink();
 	}
 	
 	
@@ -186,18 +187,18 @@ public class ServerSocket extends Thread{
 		_sendBuff.Clear();
 		_sendBuff.WriteInt(1);//随便写入一个整形占前4个字节，用于存放包内容长度
 		_sendBuff.WriteStringUInt(data.getBytes("UTF-8"));
+		System.out.println("write len :"+(_sendBuff.GetLen()-4));
+		if((_sendBuff.GetLen()-4)<33)
+		{
+			System.out.println("");
+		}
 		_sendBuff.WriteLen(_sendBuff.GetLen()-4);//写入包内容长度。
 		socket.write(ByteBuffer.wrap(_sendBuff.GetBuff(), 0, _sendBuff.GetLen()));//发送数据
 		} catch (UnsupportedEncodingException e) {
 			System.out.println("不支持的编码"+data);
 		} catch(IOException e) {
-			_socketList.remove(uid);//移除通道号与通道的绑定
+			_socketList.remove(uid);//移除通道号与通道的绑定,不关闭socket，由nio自己控制关闭，不然发送的数据会错乱
 			System.out.println("发送失败，uid:"+uid+"消息内容："+data);
-			try {
-				socket.close();
-			} catch (IOException e1) {
-				System.out.println("关闭失败");
-			}
 		}
 	}
 

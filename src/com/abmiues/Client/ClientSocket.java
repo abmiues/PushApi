@@ -23,7 +23,7 @@ public class ClientSocket {
 	private DataOutputStream outPut;
 	private DataInputStream inPut;
 	public void init() throws IOException{
-		socket=new Socket("47.254.71.248",8050);
+		socket=new Socket("127.0.0.1",8050);
 		outPut=new DataOutputStream(socket.getOutputStream());
 		inPut=new DataInputStream(socket.getInputStream());
 		new ClientThread().start();
@@ -44,8 +44,15 @@ public class ClientSocket {
 		jsonObject.put("func", "heartBeat");
 		jsonObject.put("d", "1212");
 
-		Send(jsonObject.toString());
-
+		String data=jsonObject.toString();
+		System.out.println("size:"+data.getBytes().length);
+		long startTime=System.currentTimeMillis();
+		for(int i=0;i<10000;i++)
+		{
+			Send(data);
+		}
+		long endTime=System.currentTimeMillis();
+		System.out.println("当前程序耗时："+(endTime-startTime)+"ms");
 		//sc.finishConnect();
 		//sc.close();
 	}
@@ -68,7 +75,6 @@ public class ClientSocket {
 
 	public void recv(ByteArray recvBuff)
 	{
-		recvBuff.GetLen();
 		int av =recvBuff.GetAvailable();
 		while (av>=4) {
 			int packagelen=recvBuff.ReadInt();
@@ -84,6 +90,7 @@ public class ClientSocket {
 				break;
 			}
 		}
+		recvBuff.Shrink();
 	}
 
 	//定义读取服务器数据的线程

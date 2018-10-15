@@ -114,6 +114,10 @@ public class ByteArray {
     {
         //解包数据
     	int i=byteArrayToInt(_buf,_pos);
+    	if(i>300)
+    	{
+    		System.out.println("");
+    	}
         _pos += 4;
         return i;
     }
@@ -163,6 +167,8 @@ public class ByteArray {
     
     public void WriteBytes(byte[] bytes,int length)
     {
+    	/*if(GetAvailable()<length)//如果可用的的不足了
+    		AutoExpand(true,_size-GetAvailable()+length);*/
         System.arraycopy(bytes, 0, _buf, _len, length);
         _len += length;
     }
@@ -179,6 +185,10 @@ public class ByteArray {
 			// TODO Auto-generated catch block
 			System.out.println("接收数据发现不支持的编码");//e.printStackTrace();
 			return "";
+		}catch (StringIndexOutOfBoundsException e)
+		{
+			System.out.println("suzu");
+			throw e;
 		}
         
     }
